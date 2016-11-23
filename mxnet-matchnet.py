@@ -39,7 +39,7 @@ if __name__=='__main__':
     head = '%(asctime)-15s %(message)s'
     logging.basicConfig(level=logging.DEBUG, format=head)
     if load_model:
-        epoch = 93
+        epoch = 99 
         network,arg_params,aux_params = mx.model.load_checkpoint(save_model_prefix,epoch)
         model = mx.model.FeedForward(
             ctx=devs,
