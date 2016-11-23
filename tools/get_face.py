@@ -15,7 +15,7 @@ api = API(API_KEY,API_SECRET)
 source_image_dir = '/home/sherwood/data/face/'
 dst_face_dir = '/home/sherwood/data/face_cut_opencv/'
 image_file_list = ['.png','.jpg','.JPG','.JPEG','.bmp']
-detect_image_path_list = ['CACD2000_seg','CASIA_WebFace','imdb_crop','imdb_crop','wiki_crop','Facescrub_seg']
+detect_image_path_list = ['Facescrub_seg']
 face_cascade = cv2.CascadeClassifier("/home/sherwood/tools/opencv/data/haarcascades/haarcascade_frontalface_default.xml")
 count = 0
 for i in detect_image_path_list:
@@ -31,31 +31,32 @@ for i in detect_image_path_list:
                 dst_file_name = os.path.join(dst_face_sub_dir,dirs,fname)
                 if not os.path.isfile(dst_file_name):
                     img = cv2.imread(file_name_)
-                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                    faces = face_cascade.detectMultiScale(gray, 1.2, 5)
-                    if len(faces)==1:
-                        for (x, y, w, h) in faces:
-                            opencv_face_image = img[y:y+h,x:x+w]
-                            cv2.imwrite(dst_file_name,opencv_face_image)
-                            count+=1
-                            print count
-                    else:
-                        try:
-                            result = api.detection.detect(img= File(file_name_))
-                            if len(result['face']) == 1:
-                                face = result['face'][0]['position']
-                                x = int(face['center']['x'] * result['img_width'] * 0.01)
-                                y = int(face['center']['y'] * result['img_height'] * 0.01)
-                                h = int(face['height'] * result['img_height'] * 0.01 * 1.2)
-                                w = int(face['width'] * result['img_width'] * 0.01 * 1.2)
-
-                                img = img[y - h / 2:y + h / 2, x - w / 2:x + w / 2]
-                                # cv2.rectangle(img,(x-w/2,y-h/2),(x+w/2,y+h/2),(0,255,0),2)
-                                cv2.imwrite(os.path.join(dst_face_sub_dir, dirs, fname), img)
+                    if not img is None:
+                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                        faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+                        if len(faces)==1:
+                            for (x, y, w, h) in faces:
+                                opencv_face_image = img[y:y+h,x:x+w]
+                                cv2.imwrite(dst_file_name,opencv_face_image)
+                                count+=1
                                 print count
-                                count += 1
-                        except:
-                            break
+                    # else:
+                    #     try:
+                    #         result = api.detection.detect(img= File(file_name_))
+                    #         if len(result['face']) == 1:
+                    #             face = result['face'][0]['position']
+                    #             x = int(face['center']['x'] * result['img_width'] * 0.01)
+                    #             y = int(face['center']['y'] * result['img_height'] * 0.01)
+                    #             h = int(face['height'] * result['img_height'] * 0.01 * 1.2)
+                    #             w = int(face['width'] * result['img_width'] * 0.01 * 1.2)
+                    #
+                    #             img = img[y - h / 2:y + h / 2, x - w / 2:x + w / 2]
+                    #             # cv2.rectangle(img,(x-w/2,y-h/2),(x+w/2,y+h/2),(0,255,0),2)
+                    #             cv2.imwrite(os.path.join(dst_face_sub_dir, dirs, fname), img)
+                    #             print count
+                    #             count += 1
+                    #     except:
+                    #         break
 # face_cascade = cv2.CascadeClassifier("/home/sherwood/tools/opencv/data/haarcascades/haarcascade_lefteye_2splits.xml")
 #
 # image = cv2.imread("/home/sherwood/data/face/imdb_crop/00/nm0000100_rm197368064_1955-1-6_2003.jpg")

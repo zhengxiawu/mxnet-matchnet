@@ -12,8 +12,14 @@ if __name__=='__main__':
                     img_data,
                   ['label'], [(batch_size,)],
                     label_data)
+    test_img_data, test_label_data = ubc.load_from_caffe_leveldb('notredame')
+    test_data = ubc.DateIter(['left_data', 'right_data'],
+                        [(batch_size, 1, 64, 64), (batch_size, 1, 64, 64)],
+                        img_data,
+                        ['label'], [(batch_size,)],
+                        label_data)
     #set GPU
-    devs = mx.gpu(0)
+    devs = [mx.gpu(0),mx.gpu(1)]
     #initialize optimizer
     sgd_opt = mx.optimizer.SGD(learning_rate=0.01,momentum=0.0,wd=0.0005,rescale_grad=(1.0/batch_size))
     #set the model prefix
@@ -33,7 +39,7 @@ if __name__=='__main__':
     head = '%(asctime)-15s %(message)s'
     logging.basicConfig(level=logging.DEBUG, format=head)
     if load_model:
-        epoch = 10
+        epoch = 93
         network,arg_params,aux_params = mx.model.load_checkpoint(save_model_prefix,epoch)
         model = mx.model.FeedForward(
             ctx=devs,
@@ -56,6 +62,7 @@ if __name__=='__main__':
             )
     model.fit(
         X=data,
+        eval_data=test_data,
         eval_metric=eval_metrics,
         epoch_end_callback=epoch_call,
         batch_end_callback=batch_call

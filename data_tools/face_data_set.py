@@ -5,7 +5,7 @@ import skimage
 sys.path.append('/home/sherwood/project/caffe/python/')
 from caffe.io import *
 def load_txt_data(data_name):
-    info_path = '/home/sherwood/data/face_cut_opencv_64/'+data_name+'.txt'
+    info_path = '/home/sherwood/data/face_cut_opencv_64_/'+data_name+'.txt'
     data_gen = []
     label_gen = []
     print "reading image ..."+data_name
@@ -95,8 +95,8 @@ class DateIter(mx.io.DataIter):
                 #add positive sample in batch
                 label.append(1)
                 random_sample = random.sample(self.unique_label_index[i],2)
-                batch_left_img.append(self.read_patch(random_sample[0]).reshape([1,64,64]))
-                batch_right_img.append(self.read_patch(random_sample[1]).reshape([1,64,64]))
+                batch_left_img.append(self.read_patch(random_sample[0]).reshape([3,64,64]))
+                batch_right_img.append(self.read_patch(random_sample[1]).reshape([3,64,64]))
                 count+=1
             else:
                 random_sample = random.sample(range(len(self.label_gen)),2)
@@ -105,8 +105,8 @@ class DateIter(mx.io.DataIter):
                     neg_count+=1
                     random_sample = random.sample(range(len(self.label_gen)), 2)
                 label.append(0)
-                batch_left_img.append(self.read_patch(random_sample[0]).reshape([1,64,64]))
-                batch_right_img.append(self.read_patch(random_sample[1]).reshape([1,64,64]))
+                batch_left_img.append(self.read_patch(random_sample[0]).reshape([3,64,64]))
+                batch_right_img.append(self.read_patch(random_sample[1]).reshape([3,64,64]))
         while not end_ind-start_ind == 128:
             random_sample = random.sample(range(len(self.label_gen)), 2)
             neg_count = 0
@@ -114,8 +114,8 @@ class DateIter(mx.io.DataIter):
                 neg_count += 1
                 random_sample = random.sample(range(len(self.label_gen)), 2)
             label.append(0)
-            batch_left_img.append(self.read_patch(random_sample[0]).reshape([1,64,64]))
-            batch_right_img.append(self.read_patch(random_sample[1]).reshape([1,64,64]))
+            batch_left_img.append(self.read_patch(random_sample[0]).reshape([3,64,64]))
+            batch_right_img.append(self.read_patch(random_sample[1]).reshape([3,64,64]))
             end_ind+=1
         return label,batch_left_img,batch_right_img
     def next(self):
